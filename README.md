@@ -55,10 +55,24 @@ it's a bash script and loads some libraries and starts the GUI via invoking the 
 * find first time stamp
 * get intital count rates
 * `if (write_lm == true || run == false || feof(pInputFile))` write to file:
-    * `lm_info_f#`, where `#` stands for the frame number starting at 0. Contains start and end time, frame start and length and the `byte_location`.
+    * `lm_info_f#`
     * 
 ##### Variables
 * `byte_location` for event identification. Gets incremented in multiples of 8 byte = 64 bits (which is the length of one event in the raw data)
+* `year00`, `month00`, etc. time stamp of the first event
+* `unitA = COINC::GetUiA(pRawBuffer[i]);`	// 0:7 NOT 1:8
+* `bankk = COINC::GetBankPair(pRawBuffer[i]) - 1;` // returns bank pair index 0:53
+* `transA = crys1 % 70;` // transaxial crystal ID within a bank
+* `modA = bank_lut[bankk][0];`	// returns bank A
+* `transA = transA + (modA * 70);`	// absolute transaxial crystal ID
+* `axA = floor(crys1 / 70) + (unitA * 84);`	// absolute transaxial IID
+
+##### Output files
+* `lm_info_f#`, where `#` stands for the frame number starting at 0. Contains start and end time, frame start and length and the `byte_location`.
+* `lm_reorder_f0_prompts.1.add_fac` . addition factors. random mean of an LOR, also scatters
+* `lm_reorder_f0_prompts.1.mul_fac` multiplicative factors. contains normalization and dead time corrections
+* `lm_reorder_f0_prompts.1.lm` just list mode data in 10 byte format
+* 
 
 ## Supplementary Files
 ### Reconstruction_Parameters_X
@@ -75,7 +89,8 @@ it's a bash script and loads some libraries and starts the GUI via invoking the 
 
 
 ## Code snippets explained
-This section has the purpose of explaining certain parts of the code or even single lines more thoroughly. No content is too simple to be added in this section as long as it helps understanding what's going on... 
+This section has the purpose of explaining certain parts of the code or even single lines more thoroughly. 
+**No content is too simple to be added in this section as long as it helps understanding what's going on!**
 
 ```
 size_t fwrite ( const void * ptr, size_t size, size_t count, FILE * stream );
